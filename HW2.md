@@ -1,4 +1,4 @@
--   1.  
+## Problem 1: visualization
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-1-1.png) \* Average
 boardings on weekdays show similar patterns. Saturday and Sunday have
@@ -21,25 +21,23 @@ status constant, temperature seem not to have a noticeable effect on
 number of UT students riding the bus and the ridership remains low
 compared to weekday.
 
--   1.  
+## Problem 2: Saratoga house prices
 
-<!-- -->
+    ## [1] 59672.64
 
-    ## [1] 61123.43
+    ## [1] 52804.29
 
-    ## [1] 53746.07
+    ## [1] 61775.84 52349.51 64620.32 58118.20 56069.33
 
-    ## [1] 50046.41 63922.73 59001.18 64722.18 55971.82
+    ## [1] 58586.64
 
-    ## [1] 58732.86
+    ## [1] 2145.163
 
-    ## [1] 2701.448
+    ## [1] 67153.18
 
-    ## [1] 65998.64
+    ## [1] 67153.18 67153.18 67153.18 67153.18 67153.18
 
-    ## [1] 65998.64 65998.64 65998.64 65998.64 65998.64
-
-    ## [1] 65998.64
+    ## [1] 67153.18
 
     ## [1] 0
 
@@ -50,21 +48,19 @@ compared to weekday.
     that we can see the t-statistics for each variables and see which
     variables are statistically significant.
 
--   1.  
-
-<!-- -->
+## Problem 3: Classification and retrospective sampling
 
     ##         (Intercept)            duration              amount         installment 
-    ##               -0.58                0.02                0.00                0.20 
+    ##               -0.46                0.03                0.00                0.18 
     ##                 age         historypoor     historyterrible          purposeedu 
-    ##               -0.02               -1.06               -2.03                0.94 
+    ##               -0.02               -1.11               -1.85                0.74 
     ## purposegoods/repair       purposenewcar      purposeusedcar       foreigngerman 
-    ##                0.24                0.81               -0.49               -1.69
+    ##                0.05                0.87               -0.74               -1.34
 
     ##    yhat
     ## y     0   1
-    ##   0 130  13
-    ##   1  36  21
+    ##   0 127  13
+    ##   1  42  18
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-9-1.png) \* We find
 that having terrible history has lower probability of default than
@@ -74,13 +70,13 @@ defaults. So there are “too many” defaults relative to the good ones.
 Therefore, this data set is not appropriate for building a predictive
 model of defaults. The bank should use random sample.
 
--   1.  
+## Problem 4: Children and hotel reservations
 
 |             |      rmse |
 |:------------|----------:|
-| small model | 3.1201358 |
-| big model   | 0.2333589 |
-| best model  | 0.2331168 |
+| small model | 3.1199363 |
+| big model   | 0.2333702 |
+| best model  | 0.2331322 |
 
 -   rmse for big model and best model are almost identical. While rmse
     for small model is a lot larger.
@@ -90,28 +86,28 @@ model of defaults. The bank should use random sample.
     ## # A tibble: 1 x 3
     ##   model      true_pos_rate false_pos_rate
     ##   <chr>              <dbl>          <dbl>
-    ## 1 best hotel         0.920          0.472
+    ## 1 best hotel         0.915          0.466
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
     ##        expected actual difference
-    ## Fold01 22.54486 17     -5        
-    ## Fold02 18.98165 22     4         
-    ## Fold03 19.36531 19     0         
-    ## Fold04 21.6433  26     5         
-    ## Fold05 19.48472 22     3         
-    ## Fold06 24.17079 24     0         
-    ## Fold07 23.65501 26     3         
-    ## Fold08 16.8548  12     -4        
-    ## Fold09 19.57497 21     2         
-    ## Fold10 20.06392 16     -4        
-    ## Fold11 22.27097 17     -5        
-    ## Fold12 23.81236 30     7         
-    ## Fold13 21.25983 16     -5        
-    ## Fold14 22.48995 22     0         
-    ## Fold15 20.35356 18     -2        
-    ## Fold16 20.67369 14     -6        
-    ## Fold17 21.85174 16     -5        
-    ## Fold18 24.25534 26     2         
-    ## Fold19 20.04448 24     4         
-    ## Fold20 19.08572 14     -5
+    ## Fold01 21.68983 23     2         
+    ## Fold02 18.36557 11     -7        
+    ## Fold03 21.02109 18     -3        
+    ## Fold04 20.72888 21     1         
+    ## Fold05 20.75398 23     3         
+    ## Fold06 24.50177 26     2         
+    ## Fold07 21.83382 21     0         
+    ## Fold08 22.79942 21     -1        
+    ## Fold09 18.24368 20     2         
+    ## Fold10 18.80703 22     4         
+    ## Fold11 22.39199 17     -5        
+    ## Fold12 24.66766 20     -4        
+    ## Fold13 22.56924 23     1         
+    ## Fold14 22.30824 26     4         
+    ## Fold15 22.23326 17     -5        
+    ## Fold16 22.1752  25     3         
+    ## Fold17 18.73235 16     -2        
+    ## Fold18 19.46863 17     -2        
+    ## Fold19 18.86198 19     1         
+    ## Fold20 20.34668 16     -4
