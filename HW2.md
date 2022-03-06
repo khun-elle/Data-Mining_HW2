@@ -25,21 +25,21 @@ compared to weekday.
 
 <!-- -->
 
-    ## [1] 69418.13
+    ## [1] 61123.43
 
-    ## [1] 60099.76
+    ## [1] 53746.07
 
-    ## [1] 60290.33 59130.68 64343.39 56095.10 53259.22
+    ## [1] 50046.41 63922.73 59001.18 64722.18 55971.82
 
-    ## [1] 58623.74
+    ## [1] 58732.86
 
-    ## [1] 1883.097
+    ## [1] 2701.448
 
-    ## [1] 65246.68
+    ## [1] 65998.64
 
-    ## [1] 65246.68 65246.68 65246.68 65246.68 65246.68
+    ## [1] 65998.64 65998.64 65998.64 65998.64 65998.64
 
-    ## [1] 65246.68
+    ## [1] 65998.64
 
     ## [1] 0
 
@@ -55,16 +55,16 @@ compared to weekday.
 <!-- -->
 
     ##         (Intercept)            duration              amount         installment 
-    ##               -0.54                0.02                0.00                0.21 
+    ##               -0.58                0.02                0.00                0.20 
     ##                 age         historypoor     historyterrible          purposeedu 
-    ##               -0.02               -1.09               -1.93                0.67 
+    ##               -0.02               -1.06               -2.03                0.94 
     ## purposegoods/repair       purposenewcar      purposeusedcar       foreigngerman 
-    ##                0.06                0.87               -0.80               -1.83
+    ##                0.24                0.81               -0.49               -1.69
 
     ##    yhat
     ## y     0   1
-    ##   0 129  11
-    ##   1  45  15
+    ##   0 130  13
+    ##   1  36  21
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-9-1.png) \* We find
 that having terrible history has lower probability of default than
@@ -78,9 +78,9 @@ model of defaults. The bank should use random sample.
 
 |             |      rmse |
 |:------------|----------:|
-| small model | 3.1194949 |
-| big model   | 0.2333092 |
-| best model  | 0.2330560 |
+| small model | 3.1201358 |
+| big model   | 0.2333589 |
+| best model  | 0.2331168 |
 
 -   rmse for big model and best model are almost identical. While rmse
     for small model is a lot larger.
@@ -90,28 +90,28 @@ model of defaults. The bank should use random sample.
     ## # A tibble: 1 x 3
     ##   model      true_pos_rate false_pos_rate
     ##   <chr>              <dbl>          <dbl>
-    ## 1 best hotel         0.918          0.468
+    ## 1 best hotel         0.920          0.472
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
     ##        expected actual difference
-    ## Fold01 20.47608 19     -1        
-    ## Fold02 16.58915 10     -6        
-    ## Fold03 25.52985 21     -4        
-    ## Fold04 21.82633 25     4         
-    ## Fold05 18.27001 17     -1        
-    ## Fold06 23.61842 21     -2        
-    ## Fold07 22.57908 31     9         
-    ## Fold08 23.52761 19     -4        
-    ## Fold09 17.99617 16     -1        
-    ## Fold10 22.84907 22     0         
-    ## Fold11 22.39486 18     -4        
-    ## Fold12 23.44966 27     4         
-    ## Fold13 17.7227  18     1         
-    ## Fold14 21.08908 20     -1        
-    ## Fold15 24.27265 20     -4        
-    ## Fold16 17.01753 15     -2        
-    ## Fold17 22.22126 22     0         
-    ## Fold18 20.99867 19     -1        
-    ## Fold19 17.51489 18     1         
-    ## Fold20 22.48377 24     2
+    ## Fold01 22.54486 17     -5        
+    ## Fold02 18.98165 22     4         
+    ## Fold03 19.36531 19     0         
+    ## Fold04 21.6433  26     5         
+    ## Fold05 19.48472 22     3         
+    ## Fold06 24.17079 24     0         
+    ## Fold07 23.65501 26     3         
+    ## Fold08 16.8548  12     -4        
+    ## Fold09 19.57497 21     2         
+    ## Fold10 20.06392 16     -4        
+    ## Fold11 22.27097 17     -5        
+    ## Fold12 23.81236 30     7         
+    ## Fold13 21.25983 16     -5        
+    ## Fold14 22.48995 22     0         
+    ## Fold15 20.35356 18     -2        
+    ## Fold16 20.67369 14     -6        
+    ## Fold17 21.85174 16     -5        
+    ## Fold18 24.25534 26     2         
+    ## Fold19 20.04448 24     4         
+    ## Fold20 19.08572 14     -5
