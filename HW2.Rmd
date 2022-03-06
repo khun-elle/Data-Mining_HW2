@@ -1,0 +1,272 @@
+---
+title: "HW2"
+author: "Elle Boodsakorn"
+date: "3/7/2022"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+* 1.
+
+```{r}
+capmetro_UT <- read_csv("/Users/jirapat/Desktop/R/Data Mining/capmetro_UT.csv")
+
+# Recode the categorical variables in sensible, rather than alphabetical, order
+capmetro_UT <- mutate(capmetro_UT, day_of_week = factor(day_of_week, levels=c("Mon", "Tue", "Wed","Thu", "Fri", "Sat", "Sun")), month = factor(month, levels=c("Sep", "Oct","Nov")))
+
+ave_boardings <- capmetro_UT %>% group_by(hour_of_day, day_of_week, month) %>% summarise(average_boardings = mean(boarding))
+
+#average boarding by hour of day faceted by day of week
+ggplot(ave_boardings, aes(x = hour_of_day, y = average_boardings, color = month)) + geom_line() + facet_wrap(vars(day_of_week)) + labs(x = '', y = '', color = 'Month', title = 'Average Boarding by Hour of Day Faceted by Day of Week')
+```
+* Average boardings on weekdays show similar patterns. Saturday and Sunday have significantly less boarding. For Monday through Friday, peak average boarding happens between 3pm to 5pm. This could be because many college students left campus around that time. Average boardings on Mondays in September is lower than Mondays in other months because 1st Monday of September is Labor day which we can expect fewer people riding the buses so this day pulls the average down. Average boardings on Weds/Thurs/Fri in November look lower could be due to Thanksgiving holiday so there is less people riding the buses to and from UT.
+
+```{r}
+#boarding by temperature faceted by hour of day
+ggplot(capmetro_UT, aes(x = temperature, y = boarding)) + geom_point(aes(color = weekend)) + facet_wrap(vars(hour_of_day))
+```
+* The plot shows boarding by temperature faceted by hour of day and colored by whether it is a weekday or a weekend. We see that ridership is high on weekday during 1pm. to 5pm. This is because the temperature is especially high during that period of time so more people might decide to take buses instead of walking. When holding hour of day and weekend status constant, temperature seem not to have a noticeable effect on number of UT students riding the bus and the ridership remains low compared to weekday.
+
+* 2.
+
+```{r}
+library(tidyverse)
+library(modelr)
+library(rsample)  # for creating train/test splits
+library(mosaic)
+library(broom)
+library(ggplot2)
+library(caret)
+library(parallel)
+library(foreach)
+data(SaratogaHouses)
+```
+
+```{r}
+#split into training and testing sets
+saratoga_split <- initial_split(SaratogaHouses, prop = 0.8)
+saratoga_train <- training(saratoga_split)
+saratoga_test <- testing(saratoga_split)
+```
+
+```{r}
+#recall the medium model in class
+lm2 <- lm(price ~ . - pctCollege - sewer - waterfront - landValue - newConstruction, data=saratoga_train)
+
+rmse(lm2, saratoga_test)
+
+#best linear model
+lm_best <- lm(price ~ lotSize + landValue + livingArea + bedrooms + bathrooms + rooms + waterfront + newConstruction + centralAir, data = saratoga_train)
+
+rmse(lm_best, saratoga_test)
+
+#cross validation for best linear model
+K_folds <- 5
+
+SaratogaHouses <- SaratogaHouses %>% mutate(fold_id = rep(1:K_folds, length=nrow(SaratogaHouses)) %>% sample)
+
+#now loop over folds
+rmse_cv <- foreach(fold = 1:K_folds, .combine='c') %do% {
+    lm_best = lm(price ~ lotSize + landValue + livingArea + bedrooms + bathrooms + rooms + waterfront + newConstruction + centralAir,
+                 data = filter(SaratogaHouses, fold_id != fold))
+    modelr::rmse(lm_best, data = filter(SaratogaHouses, fold_id == fold))
+}
+
+rmse_cv
+mean(rmse_cv)  # mean CV error
+sd(rmse_cv)/sqrt(K_folds)   # approximate standard error of CV error
+
+#best KNN.
+#construct the training and test-set feature matrices
+Xtrain <- model.matrix(~ lotSize + landValue + livingArea + bedrooms + bathrooms + rooms + waterfront + newConstruction + centralAir + rooms:bathrooms -1, data = saratoga_train)
+Xtest <- model.matrix(~ lotSize + landValue + livingArea + bedrooms + bathrooms + rooms + waterfront + newConstruction + centralAir + rooms:bathrooms -1, data = saratoga_test)
+
+#training and testing set responses
+ytrain <- saratoga_train$price
+ytest <- saratoga_test$price
+
+#now rescale
+scale_train <- apply(Xtrain, 2, sd)
+Xtilde_train <- scale(Xtrain, scale = scale_train)
+Xtilde_test <- scale(Xtest, scale = scale_train)
+
+#apply knn
+knn_saratoga <- knnreg(ytrain ~ Xtilde_train, data = saratoga_train, k = 100)
+rmse(knn_saratoga, saratoga_test)
+
+#cross validation for knn_saratoga
+K_folds <- 5
+SaratogaHouses = SaratogaHouses %>%
+    mutate(fold_id = rep(1:K_folds, length = nrow(SaratogaHouses)) %>% sample)
+
+# now loop over folds
+rmse_cv2 = foreach(fold = 1:K_folds, .combine='c') %do% {
+    knn_saratoga = knnreg(ytrain ~ Xtilde_train,
+                          data = filter(SaratogaHouses, fold_id != fold), k = 100)
+    modelr::rmse(knn_saratoga, data = filter(SaratogaHouses, fold_id == fold))
+}
+
+rmse_cv2
+mean(rmse_cv2)  # mean CV error
+sd(rmse_cv2)/sqrt(K_folds)   # approximate standard error of CV error
+```
+* The linear model has rmse = 58667.24 while KNN has rmse = 66285.21. So linear model seems to do better at achieving lower out-of-sample mean-squared error. So the local taxing authority can use this model to predict market values. Another good thing for linear model is that we can see the t-statistics for each variables and see which variables are statistically significant.
+
+* 3.
+
+```{r}
+german_credit <- read_csv("/Users/jirapat/Desktop/R/Data Mining/german_credit.csv")
+
+#split into training and testing sets
+german_split <- initial_split(german_credit, prop = 0.8)
+german_train <- training(german_split)
+german_test <- testing(german_split)
+
+#logit
+mdl_german_credit <- glm(Default ~ duration + amount + installment + age + history + purpose + foreign, data = german_train, family = binomial)
+
+coef(mdl_german_credit) %>% round(2)
+
+phat_test_mdl_german_credit <- predict(mdl_german_credit, german_test, type = 'response')
+ytest_mdl_german_credit <- ifelse(phat_test_mdl_german_credit > 0.5, 1, 0)
+confusion_out_mdl_german_credit <- table(y = german_test$Default, yhat = ytest_mdl_german_credit)
+
+confusion_out_mdl_german_credit
+```
+
+```{r}
+#odd ratio
+prediction_data <- as.data.frame(phat_test_mdl_german_credit) %>% mutate(most_likely_outcome = round(phat_test_mdl_german_credit), odds_ratio = phat_test_mdl_german_credit/(1 - phat_test_mdl_german_credit))
+```
+
+```{r}
+#default probability by credit history
+prob_default <- xtabs(~history + Default, data = german_credit) %>% prop.table %>% round(3)
+
+history <- c("good","poor","terrible")
+
+default_prob_each_history <- c(5.3, 19.7, 5.0) #good has default prob of 5.3%
+
+table <- tibble(history = history, default_prob_each_history = default_prob_each_history)
+```
+
+```{r}
+#bar graph
+ggplot(table, aes(x = history, y = default_prob_each_history, color = history)) + geom_col() + labs(x = "History", y = "Default Probability", fill = "History")
+```
+* We find that having terrible history has lower probability of default than having good or poor history which is not intuitive. The issue with this data set is that it is not a random sample, rather it oversamples defaults. So there are "too many" defaults relative to the good ones. Therefore, this data set is not appropriate for building a predictive model of defaults. The bank should use random sample.
+
+* 4.
+
+```{r}
+hotel_dev <- read_csv("/Users/jirapat/Desktop/R/Data Mining/hotels_dev.csv")
+hotel_val <- read_csv("/Users/jirapat/Desktop/R/Data Mining/hotels_val.csv")
+
+#model building
+library(tidyverse)
+library(rsample)
+library(caret)
+library(modelr)
+library(knitr)
+library(mosaic)
+library(parallel)
+library(foreach)
+hotel_cv <- crossv_kfold(hotel_dev, k = K_folds)
+
+#small model
+hotel_1 <- map(hotel_cv$train, ~ glm(children ~ market_segment + adults + customer_type + is_repeated_guest, data = ., family = 'binomial'))
+
+#small model rmse
+hotel_1_rmse <- map2_dbl(hotel_1, hotel_cv$test, modelr::rmse) %>% mean
+
+#small model prediction
+p_hotel_1 <- map2(hotel_1, hotel_cv$test, ~ predict(.x, newdata = .y, type='response'))
+```
+
+```{r}
+#big model
+hotel_2 <- map(hotel_cv$train, ~ glm(children ~ . - arrival_date, data = .))
+
+#big model rmse
+hotel_2_rmse <- map2_dbl(hotel_2, hotel_cv$test, modelr::rmse) %>% mean
+
+#bif model prediction
+p_hotel_2 <- map2(hotel_2, hotel_cv$test, ~ predict(.x, newdata = .y, type='response'))
+```
+
+```{r}
+#best linear model
+best_hotel <- map(hotel_cv$train, ~ lm(children ~ . -arrival_date - days_in_waiting_list - required_car_parking_spaces + average_daily_rate:total_of_special_requests + is_repeated_guest:total_of_special_requests + is_repeated_guest:average_daily_rate, data = .))
+
+#best model rmse
+best_hotel_rmse <- map2_dbl(best_hotel, hotel_cv$test, modelr::rmse) %>% mean
+
+#best model prediction
+p_best_hotel <- map2(best_hotel, hotel_cv$test, ~ predict(.x, newdata = .y))
+```
+
+```{r}
+hotel_rmse <- tibble(c(hotel_1_rmse, hotel_2_rmse, best_hotel_rmse))
+colnames(hotel_rmse) = c("rmse")
+rownames(hotel_rmse) = c("small model", "big model", "best model")
+kable(hotel_rmse)
+```
+* rmse for big model and best model are almost identical. While rmse for small model is a lot larger.
+
+```{r}
+#model validation: step 1
+phat_best_hotel_val <- predict(best_hotel$`1`, hotel_val, type='response')
+grid <- seq(0.95, 0.05, by = -0.005)
+best_hotel_roc <- foreach(thresh = grid, .combine='rbind') %do% {
+  
+  hotel_best_yhat = ifelse(phat_best_hotel_val >= thresh, 1, 0)
+  
+  matrix = table(y = hotel_val$children, yhat = hotel_best_yhat)
+
+  tpr_fpr <- tibble(model = "best hotel", true_pos_rate = ifelse(class(try(matrix[2,"1"], silent=TRUE)) == "try-error", 0, matrix[2,"1"]/sum(hotel_val$children==1)), false_pos_rate = ifelse(class(try(matrix[1,"1"], silent=TRUE)) == "try-error", 0, matrix[1,"1"]/sum(hotel_val$children==0)))
+  rbind(tpr_fpr)
+} %>% tibble()
+
+tpr_fpr
+
+#roc curve
+roc_curve <- ggplot(best_hotel_roc, aes(x = false_pos_rate, y = true_pos_rate)) + geom_line() + ylim(0,1) + xlim(0,1) + labs(x = "False Positive Rate(FPR)", y = "True Positive Rate(TPR)", title = "ROC curve for best model")
+
+roc_curve
+
+```
+
+```{r}
+#model validation: step 2
+library("purrr")
+K_folds <- 20
+
+folds <- createFolds(hotel_val$children, k = K_folds)
+output <- lapply(folds, function(x){
+  test <- hotel_val[x,]
+  pred <- predict(hotel_2, test)
+   return(pred)
+})
+
+actual <- lapply(folds, function(x){
+    test <- hotel_val[x,]
+    return(sum(test$children))
+})
+
+expected <- c()
+difference <- c()
+for (k in seq(1, 20)){ 
+  expected <- append(expected, mean(unlist(output[k]))*250)
+  difference <- append(difference, as.integer(unlist(actual[k])) - as.integer(expected[k]))
+}
+result <- cbind(expected, actual, difference)
+result
+```
