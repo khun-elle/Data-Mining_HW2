@@ -149,18 +149,19 @@ prediction_data <- as.data.frame(phat_test_mdl_german_credit) %>% mutate(most_li
 
 ```{r}
 #default probability by credit history
-prob_default <- xtabs(~history + Default, data = german_credit) %>% prop.table %>% round(3)
+prob_default <- xtabs(~history + Default, data = german_credit) 
 
-history <- c("good","poor","terrible")
+probability <- as.data.frame(list(history = c("terrible","poor","good"), 
+                                default_prob_each_history = c(prob_default[3,2]/(prob_default[3,1]+prob_default[3,2]), 
+                                                 prob_default[2,2]/(prob_default[2,1]+prob_default[2,2]), 
+                                                 prob_default[1,2]/(prob_default[1,1]+prob_default[1,2]))))
 
-default_prob_each_history <- c(5.3, 19.7, 5.0) #good has default prob of 5.3%
-
-table <- tibble(history = history, default_prob_each_history = default_prob_each_history)
+probability
 ```
 
 ```{r}
 #bar graph
-ggplot(table, aes(x = history, y = default_prob_each_history, color = history)) + geom_col() + labs(x = "History", y = "Default Probability", fill = "History")
+ggplot(probability, aes(x = history, y = default_prob_each_history)) + geom_col() + labs(x = "History", y = "Default Probability", fill = "History")
 ```
 * We find that having terrible history has lower probability of default than having good or poor history which is not intuitive. The issue with this data set is that it is not a random sample, rather it oversamples defaults. So there are "too many" defaults relative to the good ones. Therefore, this data set is not appropriate for building a predictive model of defaults. The bank should use random sample.
 
