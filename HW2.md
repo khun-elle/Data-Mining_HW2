@@ -23,21 +23,21 @@ compared to weekday.
 
 ## Problem 2: Saratoga house prices
 
-    ## [1] 59672.64
+    ## [1] 62429.63
 
-    ## [1] 52804.29
+    ## [1] 56260.38
 
-    ## [1] 61775.84 52349.51 64620.32 58118.20 56069.33
+    ## [1] 54962.86 63113.85 56724.86 61696.41 56823.13
 
-    ## [1] 58586.64
+    ## [1] 58664.22
 
-    ## [1] 2145.163
+    ## [1] 1578.672
 
-    ## [1] 67153.18
+    ## [1] 66168.8
 
-    ## [1] 67153.18 67153.18 67153.18 67153.18 67153.18
+    ## [1] 66168.8 66168.8 66168.8 66168.8 66168.8
 
-    ## [1] 67153.18
+    ## [1] 66168.8
 
     ## [1] 0
 
@@ -51,16 +51,21 @@ compared to weekday.
 ## Problem 3: Classification and retrospective sampling
 
     ##         (Intercept)            duration              amount         installment 
-    ##               -0.46                0.03                0.00                0.18 
+    ##               -0.47                0.02                0.00                0.18 
     ##                 age         historypoor     historyterrible          purposeedu 
-    ##               -0.02               -1.11               -1.85                0.74 
+    ##               -0.02               -1.12               -1.93                0.69 
     ## purposegoods/repair       purposenewcar      purposeusedcar       foreigngerman 
-    ##                0.05                0.87               -0.74               -1.34
+    ##               -0.05                0.90               -0.86               -1.07
 
     ##    yhat
     ## y     0   1
-    ##   0 127  13
-    ##   1  42  18
+    ##   0 133  11
+    ##   1  39  17
+
+    ##    history default_prob_each_history
+    ## 1 terrible                 0.1706485
+    ## 2     poor                 0.3187702
+    ## 3     good                 0.5955056
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-9-1.png) \* We find
 that having terrible history has lower probability of default than
@@ -74,9 +79,9 @@ model of defaults. The bank should use random sample.
 
 |             |      rmse |
 |:------------|----------:|
-| small model | 3.1199363 |
-| big model   | 0.2333702 |
-| best model  | 0.2331322 |
+| small model | 3.1208586 |
+| big model   | 0.2332731 |
+| best model  | 0.2330139 |
 
 -   rmse for big model and best model are almost identical. While rmse
     for small model is a lot larger.
@@ -86,28 +91,28 @@ model of defaults. The bank should use random sample.
     ## # A tibble: 1 x 3
     ##   model      true_pos_rate false_pos_rate
     ##   <chr>              <dbl>          <dbl>
-    ## 1 best hotel         0.915          0.466
+    ## 1 best hotel         0.913          0.459
 
 ![](HW2_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
     ##        expected actual difference
-    ## Fold01 21.68983 23     2         
-    ## Fold02 18.36557 11     -7        
-    ## Fold03 21.02109 18     -3        
-    ## Fold04 20.72888 21     1         
-    ## Fold05 20.75398 23     3         
-    ## Fold06 24.50177 26     2         
-    ## Fold07 21.83382 21     0         
-    ## Fold08 22.79942 21     -1        
-    ## Fold09 18.24368 20     2         
-    ## Fold10 18.80703 22     4         
-    ## Fold11 22.39199 17     -5        
-    ## Fold12 24.66766 20     -4        
-    ## Fold13 22.56924 23     1         
-    ## Fold14 22.30824 26     4         
-    ## Fold15 22.23326 17     -5        
-    ## Fold16 22.1752  25     3         
-    ## Fold17 18.73235 16     -2        
-    ## Fold18 19.46863 17     -2        
-    ## Fold19 18.86198 19     1         
-    ## Fold20 20.34668 16     -4
+    ## Fold01 24.83135 23     -1        
+    ## Fold02 17.21128 22     5         
+    ## Fold03 20.70848 20     0         
+    ## Fold04 21.22225 23     2         
+    ## Fold05 16.99855 15     -1        
+    ## Fold06 24.85438 20     -4        
+    ## Fold07 21.33337 18     -3        
+    ## Fold08 22.71525 27     5         
+    ## Fold09 20.99187 22     2         
+    ## Fold10 16.89263 21     5         
+    ## Fold11 22.38434 20     -2        
+    ## Fold12 20.28594 21     1         
+    ## Fold13 17.83574 16     -1        
+    ## Fold14 23.07862 20     -3        
+    ## Fold15 18.83313 14     -4        
+    ## Fold16 25.52639 28     3         
+    ## Fold17 22.89701 23     1         
+    ## Fold18 20.90121 18     -2        
+    ## Fold19 21.18726 14     -7        
+    ## Fold20 21.73912 17     -4
