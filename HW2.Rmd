@@ -163,7 +163,7 @@ probability
 #bar graph
 ggplot(probability, aes(x = history, y = default_prob_each_history)) + geom_col() + labs(x = "History", y = "Default Probability", fill = "History")
 ```
-* We find that having terrible history has lower probability of default than having good or poor history which is not intuitive. The issue with this data set is that it is not a random sample, rather it oversamples defaults. So there are "too many" defaults relative to the good ones. Therefore, this data set is not appropriate for building a predictive model of defaults. The bank should use random sample.
+* We find that having good history has higher probability of default than having poor or terrible history which is not intuitive. The issue with this data set is that it is not a random sample, rather it oversamples defaults. So there are "too many" defaults relative to the good ones. Therefore, this data set is not appropriate for building a predictive model of defaults. The bank should use random sample.
 
 ## Problem 4: Children and hotel reservations
 
